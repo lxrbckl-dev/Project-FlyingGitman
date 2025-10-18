@@ -4,6 +4,7 @@ from managers.databaseManager import DatabaseManager
 
 x = GithubManager(token = "")
 
+
 # x.unfollowUser(user = "")
 
 # print(x.userGetDetails(user = "ala2q6"))
