@@ -7,5 +7,6 @@ on:
 jobs:
   build:
     uses: lxrbckl/lxrbckl/.github/workflows/docker-build.yml@Docker
+    secrets: inherit
     with:
       image_name: flyinggitman
