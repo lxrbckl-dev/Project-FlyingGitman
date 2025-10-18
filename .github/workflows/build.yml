@@ -1,0 +1,11 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    uses: lxrbckl/lxrbckl/.github/workflows/docker-build.yml@Docker
+    with:
+      image_name: flyinggitman
