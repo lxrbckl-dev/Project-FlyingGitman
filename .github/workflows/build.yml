@@ -2,11 +2,10 @@ name: Build and Push Docker Image
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "**" ]
 
 jobs:
   build:
     uses: lxrbckl/lxrbckl/.github/workflows/docker-build.yml@Docker
-    secrets: inherit
     with:
       image_name: flyinggitman
