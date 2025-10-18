@@ -9,3 +9,4 @@ LABEL maintainer="lxrbckl" \
 
 # Default command just prints a message
 CMD ["echo", "✅ Docker build from GitHub Actions was successful!"]
+
