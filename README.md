@@ -1,5 +1,5 @@
 # Project FlyingGitman
-> A github follower task manager.
+> TBD. Fall 2025.
 
 ---
 
