@@ -1,22 +1,17 @@
-FROM node:18-alpine AS build
+FROM node:20-alpine
+
 WORKDIR /app
 
 COPY package*.json ./
+COPY tsconfig.json ./
+
 RUN npm ci
 
-COPY tsconfig.json ./
 COPY src/ ./src/
 
 RUN npm run build
 
-FROM node:18-alpine
-WORKDIR /app
-
-COPY package*.json ./
-RUN npm ci --omit=dev
-
-COPY --from=build /app/dist ./dist
-COPY data/ ./data
+RUN npm prune --production
 
 ENV GITHUB_TOKEN=${GITHUB_TOKEN}
 ENV CRON_SCHEDULE=${CRON_SCHEDULE}
