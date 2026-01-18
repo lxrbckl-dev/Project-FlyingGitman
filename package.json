@@ -30,6 +30,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "node-cron": "^4.2.1",
     "octokit": "^5.0.5"
   }
 }

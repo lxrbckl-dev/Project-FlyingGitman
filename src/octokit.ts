@@ -3,10 +3,7 @@ import { User } from './interfaces.js';
 
 
 export class GitHubClient {
-
-
   private octokit: Octokit;
-  
 
   /**
    * Creates a GitHub client instance with authentication
@@ -139,6 +136,40 @@ export class GitHubClient {
   }
 
   /**
+   * Follows the specified user
+   * @param username Username to follow
+   * @returns Promise<string | null> Username if followed successfully, null if already following
+   */
+  async toFollow(username: string): Promise<string | null> {
+    try {
+      await this.followUser(username);
+      return username;
+    } catch (error: any) {
+      if (error.status === 422 || error.message?.includes('already following')) {
+        return null;
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Unfollows the specified user
+   * @param username Username to unfollow
+   * @returns Promise<string | null> Username if unfollowed successfully, null if not following
+   */
+  async toUnfollow(username: string): Promise<string | null> {
+    try {
+      await this.unfollowUser(username);
+      return username;
+    } catch (error: any) {
+      if (error.status === 404 || error.message?.includes('not following')) {
+        return null;
+      }
+      throw error;
+    }
+  }
+
+  /**
    * Writes JSON data to a file in a repository
    * @param owner Repository owner
    * @param repo Repository name
@@ -157,7 +188,6 @@ export class GitHubClient {
   ): Promise<void> {
     try {
       const content = JSON.stringify(data, null, 2);
-
       let sha: string | undefined;
       try {
         const existingFile = await this.octokit.rest.repos.getContent({
