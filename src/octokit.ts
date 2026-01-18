@@ -1,5 +1,5 @@
 import { Octokit } from 'octokit';
-import { User } from './interfaces.js';
+import { User, PaginationOptions, FollowResult } from './interfaces.js';
 
 
 export class GitHubClient {
@@ -21,7 +21,7 @@ export class GitHubClient {
    * @param options Pagination options. If getAll is true, fetches all followers automatically
    * @returns Promise<User[]> Array of follower users
    */
-  async getFollowers(username: string, options: { page?: number; per_page?: number; getAll?: boolean } = {}): Promise<User[]> {
+  async getFollowers(username: string, options: PaginationOptions = {}): Promise<User[]> {
     const { page = 1, per_page = 30, getAll = false } = options;
     const itemsPerPage = Math.min(per_page || (getAll ? 100 : 30), 100); 
     const allFollowers: User[] = [];
@@ -66,7 +66,7 @@ export class GitHubClient {
    * @param options Pagination options. If getAll is true, fetches all following automatically
    * @returns Promise<User[]> Array of users being followed
    */
-  async getFollowing(username: string, options: { page?: number; per_page?: number; getAll?: boolean } = {}): Promise<User[]> {
+  async getFollowing(username: string, options: PaginationOptions = {}): Promise<User[]> {
     const { page = 1, per_page = 30, getAll = false } = options;
     const itemsPerPage = Math.min(per_page || (getAll ? 100 : 30), 100); 
     const allFollowing: User[] = [];
@@ -140,7 +140,7 @@ export class GitHubClient {
    * @param username Username to follow
    * @returns Promise<string | null> Username if followed successfully, null if already following
    */
-  async toFollow(username: string): Promise<string | null> {
+  async toFollow(username: string): Promise<FollowResult> {
     try {
       await this.followUser(username);
       return username;
@@ -157,7 +157,7 @@ export class GitHubClient {
    * @param username Username to unfollow
    * @returns Promise<string | null> Username if unfollowed successfully, null if not following
    */
-  async toUnfollow(username: string): Promise<string | null> {
+  async toUnfollow(username: string): Promise<FollowResult> {
     try {
       await this.unfollowUser(username);
       return username;

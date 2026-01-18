@@ -32,3 +32,18 @@ export interface GitHubError {
     field: string;
   }>;
 }
+
+export interface PaginationOptions {
+  page?: number;
+  per_page?: number;
+  getAll?: boolean;
+}
+
+export type FollowResult = string | null;
+
+export interface DiscoveryOptions {
+  authenticatedUsername: string;
+  followQueueSize: number;
+  visitedUsers: Set<string>;
+  toFollowList: string[];
+}
