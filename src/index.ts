@@ -3,16 +3,12 @@ import { GitHubClient } from './octokit.js';
 import { DiscoveryOptions } from './interfaces.js';
 
 
-const client = new GitHubClient('');
-
 const username = 'lxrbckl';
 const followQueueSize = 25;
-const targetBranch = 'main';
-const unfollowQueueSize = 25;
-const targetFollowFile = 'data/toFollow.json';
-const targetRepository = 'Project-FlyingGitman';
-const targetUnfollowFile = 'data/toUnfollow.json';
-const commitMessage = 'Project FlyingGitman - Automated Data Collection';
+const unfollowQueueSize = 75;
+
+const client = new GitHubClient('');
+
 
 /**
  * Recursively discovers users to follow by exploring follower networks
@@ -81,12 +77,28 @@ async function discoverUsersToUnfollow(
     const myFollowerUsernames = new Set(myFollowers.map(f => f.login));
 
     const following = await client.getFollowing(authenticatedUsername, { getAll: true });
+    const followingUsernames = following.map(f => f.login);
 
-    const usersToUnfollow = following
-      .map(f => f.login)
-      .filter(username => !myFollowerUsernames.has(username));
+    const usersToUnfollow: string[] = [];
+    const checkedUsers = new Set<string>();
 
-    return usersToUnfollow.slice(0, unfollowQueueSize);
+    while (usersToUnfollow.length < unfollowQueueSize) {
+      const availableUsers = followingUsernames.filter(username => !checkedUsers.has(username));
+
+      if (availableUsers.length === 0) {
+        break;
+      }
+
+      const randomIndex = Math.floor(Math.random() * availableUsers.length);
+      const randomUser = availableUsers[randomIndex]!;
+      checkedUsers.add(randomUser);
+
+      if (!myFollowerUsernames.has(randomUser)) {
+        usersToUnfollow.push(randomUser);
+      }
+    }
+
+    return usersToUnfollow;
   } catch (error) {
     throw error;
   }
@@ -94,8 +106,34 @@ async function discoverUsersToUnfollow(
 
 async function main() {
   try {
+    // Step 1: Discover users to unfollow
+    const usersToUnfollow = await discoverUsersToUnfollow(username, unfollowQueueSize);
 
+    // Step 2: Unfollow the discovered users
+    for (const userToUnfollow of usersToUnfollow) {
+      try {
+        await client.toUnfollow(userToUnfollow);
+      } catch (error) {
+        // Continue with next user even if one fails
+      }
+    }
 
+    // Step 3: Discover users to follow
+    const usersToFollow = await discoverUsersToFollow({
+      authenticatedUsername: username,
+      followQueueSize: followQueueSize,
+      visitedUsers: new Set(),
+      toFollowList: []
+    });
+
+    // Step 4: Follow the discovered users
+    for (const userToFollow of usersToFollow) {
+      try {
+        await client.toFollow(userToFollow);
+      } catch (error) {
+        // Continue with next user even if one fails
+      }
+    }
 
   } catch (error) {
     throw error;
