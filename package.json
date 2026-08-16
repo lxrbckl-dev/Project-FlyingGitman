@@ -32,5 +32,9 @@
   "dependencies": {
     "node-cron": "^4.2.1",
     "octokit": "^5.0.5"
+  },
+  "overrides": {
+    "picomatch": "^2.3.2",
+    "brace-expansion@1": "^1.1.18"
   }
 }
